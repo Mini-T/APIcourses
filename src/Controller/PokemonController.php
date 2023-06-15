@@ -44,11 +44,11 @@ class PokemonController extends AbstractController
             ->setEvolution($evolution)
             ->setImageUrl($payload['imageUrl']);
 
-
+        $entityManager->persist($pokemon);
+        $entityManager->flush();
         $this->extractArray($payload['gender'], $genderRepo, 'App\Entity\Gender', $pokemon, 'Gender');
         $this->extractArray($payload['weaknesses'], $typeRepo, 'App\Entity\Type', $pokemon, 'Weakness');
         $this->extractArray($payload['types'], $typeRepo, 'App\Entity\Type', $pokemon, 'Type');
-        $entityManager->persist($pokemon);
         $entityManager->flush();
         return new JsonResponse($serializer->serialize($pokemon, 'json'), Response::HTTP_CREATED, [], true);
     }
