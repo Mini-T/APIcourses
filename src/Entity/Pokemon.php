@@ -30,10 +30,10 @@ class Pokemon
     #[ORM\Column(name: 'weight')]
     private ?float $weight = null;
 
-    #[ORM\ManyToOne(targetEntity: Gender::class)]
+    #[ORM\ManyToMany(targetEntity: Gender::class)]
     private ?Collection $genders = null;
 
-    #[ORM\ManyToOne(targetEntity: 'category')]
+    #[ORM\ManyToOne(targetEntity: Category::class)]
     private ?Category $category = null;
 
     #[ORM\ManyToMany(targetEntity: Type::class, inversedBy: 'weaknesses')]
@@ -170,8 +170,17 @@ class Pokemon
     /**
      * @param Category|null $category
      */
-    public function setCategory(?Category $category): self
+    public function setCategory(Category $category): self
     {
+        if (is_array($category)) {
+            $categoryObject = new Category();
+            foreach($category as $key => $value) {
+                $method = 'set'.ucfirst($key);
+                $categoryObject->$method($value);
+            }
+            $this->category = $categoryObject;
+            return $this;
+        }
         $this->category = $category;
         return $this;
     }
@@ -179,7 +188,7 @@ class Pokemon
     /**
      * @return Pokemon
      */
-    public function getEvolution(): Pokemon
+    public function getEvolution(): ?Pokemon
     {
         return $this->evolution;
     }
@@ -187,8 +196,17 @@ class Pokemon
     /**
      * @param Pokemon $evolution
      */
-    public function setEvolution(Pokemon $evolution): self
+    public function setEvolution(Pokemon|array|null $evolution): self
     {
+        if (is_array($evolution)) {
+            $categoryObject = new Pokemon();
+            foreach($evolution as $key => $value) {
+                $method = 'set'.ucfirst($key);
+                $categoryObject->$method($value);
+            }
+            $this->evolution = $evolution;
+            return $this;
+        }
         $this->evolution = $evolution;
         return $this;
     }
@@ -213,7 +231,7 @@ class Pokemon
     /**
      * @return Pokemon
      */
-    public function getRegression(): Pokemon
+    public function getRegression(): ?Pokemon
     {
         return $this->regression;
     }
@@ -221,8 +239,17 @@ class Pokemon
     /**
      * @param Pokemon $regression
      */
-    public function setRegression(Pokemon $regression): self
+    public function setRegression(Pokemon|array|null $regression): self
     {
+        if (is_array($regression)) {
+            $categoryObject = new Pokemon();
+            foreach($regression as $key => $value) {
+                $method = 'set'.ucfirst($key);
+                $categoryObject->$method($value);
+            }
+            $this->regression = $regression;
+            return $this;
+        }
         $this->regression = $regression;
         return $this;
     }
@@ -266,6 +293,8 @@ class Pokemon
 
     public function setTypes(Collection $types): self {
         $this->types = $types;
+
+        return $this;
     }
 
     /**
@@ -279,7 +308,7 @@ class Pokemon
     /**
      * @param Collection|null $types
      */
-    public function addTypes(?Type $type): self
+    public function addType(?Type $type): self
     {
         if (!$this->types->contains($type)) {
             $this->types->add($type);
